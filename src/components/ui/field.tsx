@@ -6,13 +6,17 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   hint?: string;
+  labelClassName?: string;
 }
 
-export function Input({ className, label, hint, id, ...props }: InputProps) {
+export function Input({ className, label, hint, id, labelClassName, ...props }: InputProps) {
   const inputId = id ?? props.name;
 
   return (
-    <label className="grid gap-2 text-sm font-semibold text-slate-800" htmlFor={inputId}>
+    <label
+      className={cn("grid gap-2 text-sm font-semibold text-slate-800", labelClassName)}
+      htmlFor={inputId}
+    >
       {label}
       <input
         id={inputId}
