@@ -32,13 +32,16 @@ const variants: Record<BadgeVariant, string> = {
 export function Badge({
   className,
   variant = "default",
+  tone,
   ...props
-}: HTMLAttributes<HTMLSpanElement> & { variant?: BadgeVariant }) {
+}: HTMLAttributes<HTMLSpanElement> & { variant?: BadgeVariant; tone?: BadgeVariant }) {
+  const resolvedVariant = tone ?? variant;
+
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold",
-        variants[variant],
+        variants[resolvedVariant],
         className,
       )}
       {...props}
