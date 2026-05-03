@@ -36,7 +36,7 @@ export async function createSupabaseServerClient() {
   );
 }
 
-export function getServiceSupabase() {
+export function createServiceSupabaseClient() {
   if (!env.NEXT_PUBLIC_SUPABASE_URL || !serverEnv.supabaseServiceRoleKey) {
     return null;
   }
@@ -46,4 +46,6 @@ export function getServiceSupabase() {
     serverEnv.supabaseServiceRoleKey,
   );
 }
+
+export const getServiceSupabase = createServiceSupabaseClient;
 

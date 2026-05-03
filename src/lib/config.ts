@@ -17,6 +17,7 @@ export const serverEnv = {
   tiktokClientId: process.env.TIKTOK_CLIENT_ID ?? "",
   tiktokClientSecret: process.env.TIKTOK_CLIENT_SECRET ?? "",
   schedulerSecret: process.env.SCHEDULER_SECRET ?? "",
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
 };
 
 export const env = {
