@@ -31,6 +31,8 @@ export function Input({ className, label, hint, id, labelClassName, ...props }: 
   );
 }
 
+export const Field = Input;
+
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
