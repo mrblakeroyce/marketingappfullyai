@@ -13,7 +13,8 @@ type BadgeVariant =
   | "soft"
   | "dark"
   | "ai"
-  | "neutral";
+  | "neutral"
+  | "emerald";
 
 const variants: Record<BadgeVariant, string> = {
   default: "border-slate-200 bg-white text-slate-700",
@@ -27,6 +28,7 @@ const variants: Record<BadgeVariant, string> = {
   dark: "border-white/10 bg-ink-950 text-white",
   ai: "border-brand-200 bg-brand-100 text-brand-800 shadow-sm",
   neutral: "border-ink-950/10 bg-white/80 text-ink-700",
+  emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
 };
 
 export function Badge({
