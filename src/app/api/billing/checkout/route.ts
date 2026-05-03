@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const priceId = getStripePriceId(plan.id);
     const stripe = getStripe();
 
-    if (!priceId) {
+    if (!priceId || !stripe) {
       return NextResponse.json(
         {
           mode: "demo",

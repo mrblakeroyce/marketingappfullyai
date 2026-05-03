@@ -4,8 +4,12 @@ export function getPlan(planId: string | null | undefined) {
   return plans.find((plan) => plan.id === planId);
 }
 
+export function getPlanById(planId: string | null | undefined) {
+  return getPlan(planId) ?? plans[1];
+}
+
 export function getStripePriceId(planId: PlanId) {
-  const envKey = `NEXT_PUBLIC_STRIPE_${planId.toUpperCase()}_PRICE_ID`;
+  const envKey = `STRIPE_${planId.toUpperCase()}_PRICE_ID`;
   return process.env[envKey];
 }
 
