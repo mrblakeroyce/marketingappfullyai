@@ -64,3 +64,62 @@ export interface PostVariant {
   metadata: Json;
   created_at: string;
 }
+
+export type Database = {
+  public: {
+    Tables: {
+      business_profiles: {
+        Row: BusinessProfile;
+        Insert: Partial<BusinessProfile> & {
+          user_id: string;
+          business_name: string;
+        };
+        Update: Partial<BusinessProfile>;
+      };
+      generated_posts: {
+        Row: GeneratedPost;
+        Insert: Partial<GeneratedPost> & {
+          user_id: string;
+          prompt: string;
+          caption: string;
+        };
+        Update: Partial<GeneratedPost>;
+      };
+      post_variants: {
+        Row: PostVariant;
+        Insert: Partial<PostVariant> & {
+          generated_post_id: string;
+          platform: SocialProvider;
+          caption: string;
+        };
+        Update: Partial<PostVariant>;
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          plan: PlanName;
+          status: string;
+          current_period_end: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plan?: PlanName;
+          status?: string;
+          current_period_end?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["subscriptions"]["Row"]>;
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
+};
