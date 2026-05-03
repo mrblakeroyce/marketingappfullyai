@@ -5,6 +5,20 @@ export const appConfig = {
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
 };
 
+export const serverEnv = {
+  openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+  stripeStarterPriceId: process.env.STRIPE_STARTER_PRICE_ID ?? "",
+  stripeGrowthPriceId: process.env.STRIPE_GROWTH_PRICE_ID ?? "",
+  stripeProPriceId: process.env.STRIPE_PRO_PRICE_ID ?? "",
+  metaClientId: process.env.META_CLIENT_ID ?? "",
+  metaClientSecret: process.env.META_CLIENT_SECRET ?? "",
+  tiktokClientId: process.env.TIKTOK_CLIENT_ID ?? "",
+  tiktokClientSecret: process.env.TIKTOK_CLIENT_SECRET ?? "",
+  schedulerSecret: process.env.SCHEDULER_SECRET ?? "",
+};
+
 export const plans = [
   {
     id: "starter",
