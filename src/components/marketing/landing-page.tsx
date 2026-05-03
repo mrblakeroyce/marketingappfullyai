@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, CalendarClock, Check, Sparkles, Wand2, Zap } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -178,18 +179,17 @@ export function LandingPage() {
           </CardContent>
         </Card>
         <div className="grid gap-4 sm:grid-cols-2">
-          {[
+          {([
             [Zap, "Auto captions + hashtags", "Professional copy that sounds like your business, not a robot."],
             [CalendarClock, "Scheduling + autoposting", "Post now or schedule through official provider adapters."],
             [Sparkles, "Logo and bio optimization", "Resize profile images and improve bios for every platform."],
             [Wand2, "Weekly auto mode", "Pro plan content queue built around your business calendar."],
-          ].map(([Icon, title, copy]) => (
+          ] as Array<[LucideIcon, string, string]>).map(([Icon, title, copy]) => (
             <Card key={String(title)} className="rounded-[2rem]">
               <CardContent className="p-6">
-                {/* @ts-expect-error icon tuple */}
                 <Icon className="mb-5 size-7 text-violet-700" />
-                <h3 className="font-display text-xl font-black">{title as string}</h3>
-                <p className="mt-2 text-sm font-semibold leading-6 text-ink/60">{copy as string}</p>
+                <h3 className="font-display text-xl font-black">{title}</h3>
+                <p className="mt-2 text-sm font-semibold leading-6 text-ink/60">{copy}</p>
               </CardContent>
             </Card>
           ))}
