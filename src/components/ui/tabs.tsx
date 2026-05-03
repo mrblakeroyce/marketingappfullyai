@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export function Tabs({
   tabs,
   defaultValue,
 }: {
-  tabs: Array<{ value: string; label: string; content: React.ReactNode }>;
+  tabs: Array<{ value: string; label: string; content: ReactNode }>;
   defaultValue?: string;
 }) {
   const [active, setActive] = useState(defaultValue ?? tabs[0]?.value);
