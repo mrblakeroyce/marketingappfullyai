@@ -1,10 +1,11 @@
 import Link from "next/link";
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+import { Children, cloneElement, isValidElement } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger" | "dark";
-type Size = "sm" | "md" | "lg";
+type Variant = "primary" | "secondary" | "ghost" | "danger" | "dark" | "soft";
+type Size = "sm" | "md" | "lg" | "xl";
 
 const variants: Record<Variant, string> = {
   primary:
@@ -14,12 +15,15 @@ const variants: Record<Variant, string> = {
   ghost: "text-ink hover:bg-ink/5",
   danger: "bg-red-500 text-white shadow-sm hover:bg-red-600",
   dark: "bg-white text-ink shadow-soft hover:-translate-y-0.5",
+  soft:
+    "border border-brand-200 bg-brand-100 text-brand-900 shadow-sm hover:-translate-y-0.5 hover:bg-brand-200/70",
 };
 
 const sizes: Record<Size, string> = {
   sm: "min-h-9 px-4 text-sm",
   md: "min-h-11 px-5 text-sm",
   lg: "min-h-14 px-7 text-base",
+  xl: "min-h-16 px-8 text-base",
 };
 
 const base =
@@ -28,6 +32,7 @@ const base =
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
   size?: Size;
+  asChild?: boolean;
 };
 
 export function Button({
@@ -35,8 +40,19 @@ export function Button({
   variant = "primary",
   size = "md",
   type = "button",
+  asChild,
   ...props
 }: ButtonProps) {
+  if (asChild && props.children) {
+    const child = Children.only(props.children);
+    if (isValidElement(child)) {
+      const childElement = child as ReactElement<{ className?: string }>;
+      return cloneElement(childElement, {
+        className: cn(base, variants[variant], sizes[size], className, childElement.props.className),
+      });
+    }
+  }
+
   return <button className={cn(base, variants[variant], sizes[size], className)} type={type} {...props} />;
 }
 
