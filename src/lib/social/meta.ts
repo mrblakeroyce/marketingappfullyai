@@ -44,7 +44,7 @@ export class MetaProvider implements SocialProvider {
     };
   }
 
-  async publish(payload: PublishPayload, account: SocialAccount): Promise<PublishResult> {
+  async publish(payload: PublishPayload, _account: SocialAccount): Promise<PublishResult> {
     if (!process.env.META_CLIENT_ID || !process.env.META_CLIENT_SECRET) {
       return {
         provider: this.provider,
