@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
-import { appConfig } from "@/lib/config";
-import { buildPostGenerationPrompt, type AiGenerationInput } from "@/lib/ai/prompt";
+import { serverEnv } from "@/lib/config";
+import { buildMarketingPrompt, type GeneratePostInput } from "@/lib/ai/prompt";
 
 export type GeneratedVariant = {
   platform: string;
@@ -15,8 +15,10 @@ export type GeneratedPostPayload = {
   caption: string;
   hashtags: string[];
   imagePrompt: string;
+  imageUrl: string;
   suggestedTime: string;
   cta: string;
+  platformVariants: Record<string, { caption: string; hashtags: string[] }>;
   variants: GeneratedVariant[];
 };
 
@@ -27,37 +29,58 @@ const fallbackHashtags: Record<string, string[]> = {
   general: ["#ShopLocal", "#SmallBusiness", "#LocalBusiness", "#Community", "#SupportLocal"],
 };
 
-function createFallbackGeneration(input: AiGenerationInput): GeneratedPostPayload {
-  const industry = input.business.industry;
-  const city = input.business.cities[0] ?? "your area";
-  const service = input.business.services[0] ?? "what you do best";
-  const platformList = input.platforms.length ? input.platforms : ["instagram", "facebook"];
+function normalizeBusiness(input: GeneratePostInput) {
+  const profile = input.businessProfile;
+  return {
+    name: profile?.business_name ?? profile?.businessName ?? "Your Business",
+    industry: input.industryMode ?? profile?.industry ?? "general",
+    cities: profile?.cities ?? ["your area"],
+    services: profile?.services ?? ["what you do best"],
+    colors: profile?.brand_colors ?? profile?.brandColors ?? ["#111827", "#22c55e"],
+    brandVoice: profile?.brand_voice ?? profile?.brandVoice ?? "Friendly, clear, local, professional",
+    phone: profile?.phone ?? undefined,
+    website: profile?.website ?? undefined,
+  };
+}
+
+function createFallbackGeneration(input: GeneratePostInput): GeneratedPostPayload {
+  const business = normalizeBusiness(input);
+  const industry = business.industry;
+  const city = business.cities[0] ?? "your area";
+  const service = business.services[0] ?? "what you do best";
+  const platformList = input.platforms?.length ? input.platforms : ["instagram", "facebook"];
   const hashtags = fallbackHashtags[industry] ?? fallbackHashtags.general;
-  const caption = `${input.prompt} — made easy by ${input.business.name}. If you're near ${city}, stop in or message us today for ${service}.`;
+  const caption = `${input.prompt} — made easy by ${business.name}. If you're near ${city}, stop in or message us today for ${service}.`;
+  const variants = platformList.map((platform) => ({
+    platform,
+    caption:
+      platform === "tiktok"
+        ? `${input.prompt}. Quick, clear, and local — ${business.name} is ready for you.`
+        : caption,
+    hashtags: platform === "facebook" ? hashtags.slice(0, 3) : hashtags,
+    notes:
+      platform === "instagram"
+        ? "Use as feed post or story with a booking sticker."
+        : platform === "tiktok"
+          ? "Pair with a 7-second before/after clip."
+          : "Add phone number and page CTA button.",
+  }));
 
   return {
     headline: input.prompt,
     caption,
     hashtags,
-    imagePrompt: `Premium square social post for ${input.business.name}, a ${industry} business in ${city}. Use ${input.business.colors.join(
+    imagePrompt: `Premium square social post for ${business.name}, a ${industry} business in ${city}. Use ${business.colors.join(
       " and ",
     )} brand colors, clean typography, warm local-business photography, bold readable headline: "${input.prompt}".`,
+    imageUrl:
+      "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=80",
     suggestedTime: "Today at 5:30 PM",
     cta: "Message us to book now.",
-    variants: platformList.map((platform) => ({
-      platform,
-      caption:
-        platform === "tiktok"
-          ? `${input.prompt}. Quick, clear, and local — ${input.business.name} is ready for you.`
-          : caption,
-      hashtags: platform === "facebook" ? hashtags.slice(0, 3) : hashtags,
-      notes:
-        platform === "instagram"
-          ? "Use as feed post or story with a booking sticker."
-          : platform === "tiktok"
-            ? "Pair with a 7-second before/after clip."
-            : "Add phone number and page CTA button.",
-    })),
+    platformVariants: Object.fromEntries(
+      variants.map((variant) => [variant.platform, { caption: variant.caption, hashtags: variant.hashtags }]),
+    ),
+    variants,
   };
 }
 
@@ -72,15 +95,15 @@ function safeJsonParse(content: string): GeneratedPostPayload | null {
 }
 
 export async function generateMarketingPost(
-  input: AiGenerationInput,
+  input: GeneratePostInput,
 ): Promise<GeneratedPostPayload> {
-  if (!appConfig.openai.apiKey) {
+  if (!serverEnv.openaiApiKey) {
     return createFallbackGeneration(input);
   }
 
-  const openai = new OpenAI({ apiKey: appConfig.openai.apiKey });
+  const openai = new OpenAI({ apiKey: serverEnv.openaiApiKey });
   const completion = await openai.chat.completions.create({
-    model: appConfig.openai.textModel,
+    model: process.env.OPENAI_TEXT_MODEL ?? "gpt-4o-mini",
     response_format: { type: "json_object" },
     messages: [
       {
@@ -90,7 +113,7 @@ export async function generateMarketingPost(
       },
       {
         role: "user",
-        content: buildPostGenerationPrompt(input),
+        content: buildMarketingPrompt(input),
       },
     ],
     temperature: 0.78,

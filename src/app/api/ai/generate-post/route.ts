@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { generateMarketingPost } from "@/lib/ai/generator";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   const payload = await request.json().catch(() => null);
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A post prompt is required." }, { status: 400 });
   }
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -57,12 +57,11 @@ export async function POST(request: Request) {
       status: "draft",
       metadata: {
         cta: result.cta,
-        suggestedPostTime: result.suggestedPostTime,
-        platformVariants: result.platformVariants,
-        complianceNotes: result.complianceNotes,
+        suggestedPostTime: result.suggestedTime,
+        platformVariants: result.variants,
       },
     });
   }
 
-  return NextResponse.json(result);
+  return NextResponse.json({ post: result });
 }

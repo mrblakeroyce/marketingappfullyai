@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createMockBios } from "@/lib/ai/generator";
+import { generatePlatformBios } from "@/lib/ai/generator";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
@@ -8,7 +8,18 @@ export async function POST(request: Request) {
   const industry = body.industry ?? "local business";
   const city = body.city ?? "your city";
 
-  return NextResponse.json({
-    bios: createMockBios(String(business), String(industry), String(city)),
+  const bios = await generatePlatformBios({
+    prompt: "Optimize social media bios",
+    business: {
+      name: String(business),
+      industry: String(industry),
+      cities: [String(city)],
+      services: ["local service", "customer care"],
+      colors: ["#111827", "#34d399"],
+      brandVoice: "Friendly, direct, professional",
+    },
+    platforms: ["instagram", "facebook", "tiktok"],
   });
+
+  return NextResponse.json({ bios });
 }
