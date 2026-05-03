@@ -5,7 +5,7 @@ import type { SocialProviderName } from "./types";
 
 export function getSocialProvider(provider: SocialProviderName) {
   if (provider === "facebook" || provider === "instagram") {
-    return new MetaProvider(provider);
+    return new MetaProvider();
   }
 
   if (provider === "tiktok") {

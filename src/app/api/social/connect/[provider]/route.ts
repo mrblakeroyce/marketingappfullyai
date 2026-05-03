@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getSocialProvider } from "@/lib/social";
-import { supportedProviders } from "@/lib/social/types";
+import { supportedProviders, type SocialProviderName } from "@/lib/social/types";
 
 export async function GET(
   request: NextRequest,
@@ -9,14 +9,12 @@ export async function GET(
 ) {
   const { provider } = await params;
 
-  if (!supportedProviders.includes(provider as (typeof supportedProviders)[number])) {
+  if (!supportedProviders.includes(provider as SocialProviderName)) {
     return NextResponse.json({ error: "Unsupported provider" }, { status: 404 });
   }
 
-  const origin = request.nextUrl.origin;
-  const callbackUrl = `${origin}/api/social/callback/${provider}`;
   const state = crypto.randomUUID();
-  const adapter = getSocialProvider(provider);
+  const adapter = getSocialProvider(provider as SocialProviderName);
 
-  return NextResponse.redirect(adapter.getAuthorizationUrl(state, callbackUrl));
+  return NextResponse.redirect(adapter.getAuthorizationUrl(state));
 }

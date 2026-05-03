@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getAppUrl, isMetaConfigured, isTikTokConfigured } from "@/lib/config";
+import { appConfig, serverEnv } from "@/lib/config";
 
 type Params = {
   params: Promise<{ provider: string }>;
@@ -11,7 +11,7 @@ export async function GET(request: Request, { params }: Params) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const error = searchParams.get("error");
-  const appUrl = getAppUrl();
+  const appUrl = appConfig.url;
 
   if (error) {
     return NextResponse.redirect(
@@ -21,9 +21,9 @@ export async function GET(request: Request, { params }: Params) {
 
   const configured =
     provider === "meta"
-      ? isMetaConfigured()
+      ? Boolean(serverEnv.metaClientId && serverEnv.metaClientSecret)
       : provider === "tiktok"
-        ? isTikTokConfigured()
+        ? Boolean(serverEnv.tiktokClientId && serverEnv.tiktokClientSecret)
         : false;
 
   if (!configured || !code) {

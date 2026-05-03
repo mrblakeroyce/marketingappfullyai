@@ -1,14 +1,17 @@
-import type { PublishRequest, PublishResult, SocialProvider } from "./types";
+import type { PublishPayload, PublishResult, SocialAccount, SocialProvider } from "./types";
 
 export class MockSocialProvider implements SocialProvider {
   provider = "mock" as const;
+  name = "mock";
 
-  async createAuthUrl() {
+  getAuthorizationUrl() {
     return "/accounts?mockConnected=true";
   }
 
-  async exchangeCode() {
+  async exchangeCode(): Promise<SocialAccount> {
     return {
+      id: "mock-account",
+      provider: "mock",
       providerAccountId: `mock_${Date.now()}`,
       displayName: "Demo Local Business",
       accessToken: "mock-access-token",
@@ -18,12 +21,14 @@ export class MockSocialProvider implements SocialProvider {
     };
   }
 
-  async publish(request: PublishRequest): Promise<PublishResult> {
+  async publish(request: PublishPayload): Promise<PublishResult> {
     return {
-      ok: true,
       provider: "mock",
+      success: true,
+      remotePostId: `mock_post_${request.postId}_${Date.now()}`,
       providerPostId: `mock_post_${request.postId}_${Date.now()}`,
       publishedAt: new Date().toISOString(),
+      statusUrl: `https://example.com/mock-social-post/${request.postId}`,
       permalink: `https://example.com/mock-social-post/${request.postId}`,
     };
   }

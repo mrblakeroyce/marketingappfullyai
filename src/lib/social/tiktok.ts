@@ -1,16 +1,16 @@
 import { appConfig, serverEnv } from "@/lib/config";
 import type {
+  PublishPayload,
   PublishResult,
-  SocialConnection,
-  SocialPostPayload,
+  SocialAccount,
   SocialProvider,
 } from "@/lib/social/types";
 
 export class TikTokProvider implements SocialProvider {
-  id = "tiktok" as const;
+  provider = "tiktok" as const;
   displayName = "TikTok";
 
-  getConnectUrl(state: string): string {
+  getAuthorizationUrl(state: string): string {
     if (!serverEnv.tiktokClientId || !appConfig.url) {
       return `/accounts?mock=1&provider=tiktok&state=${encodeURIComponent(state)}`;
     }
@@ -26,15 +26,15 @@ export class TikTokProvider implements SocialProvider {
     return `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
   }
 
-  async exchangeCode(code: string): Promise<SocialConnection> {
+  async exchangeCode(code: string): Promise<SocialAccount> {
     if (!serverEnv.tiktokClientId || !serverEnv.tiktokClientSecret || !appConfig.url) {
       return {
-        provider: this.id,
+        id: `mock-tiktok-${Date.now()}`,
+        provider: this.provider,
         providerAccountId: `mock-tiktok-${Date.now()}`,
         displayName: "TikTok demo account",
         accessToken: `mock-code-${code}`,
         scopes: ["video.publish", "video.upload"],
-        status: "mock",
       };
     }
 
@@ -64,7 +64,8 @@ export class TikTokProvider implements SocialProvider {
     };
 
     return {
-      provider: this.id,
+      id: token.open_id,
+      provider: this.provider,
       providerAccountId: token.open_id,
       displayName: "TikTok business account",
       accessToken: token.access_token,
@@ -72,32 +73,31 @@ export class TikTokProvider implements SocialProvider {
         ? new Date(Date.now() + token.expires_in * 1000).toISOString()
         : undefined,
       scopes: token.scope?.split(",") ?? ["video.publish", "video.upload"],
-      status: "connected",
     };
   }
 
-  async publishPost(payload: SocialPostPayload): Promise<PublishResult> {
+  async publish(payload: PublishPayload): Promise<PublishResult> {
     if (!serverEnv.tiktokClientId) {
       return {
-        provider: this.id,
-        status: "mocked",
-        providerPostId: `mock-tiktok-post-${Date.now()}`,
-        url: "https://www.tiktok.com/",
+        provider: this.provider,
+        success: true,
+        remotePostId: `mock-tiktok-post-${Date.now()}`,
+        statusUrl: "https://www.tiktok.com/",
       };
     }
 
     if (!payload.imageUrl) {
       return {
-        provider: this.id,
-        status: "failed",
+        provider: this.provider,
+        success: false,
         error:
           "TikTok posting requires video/media upload workflow. This adapter is ready for approved Content Posting API credentials.",
       };
     }
 
     return {
-      provider: this.id,
-      status: "failed",
+      provider: this.provider,
+      success: false,
       error:
         "TikTok direct publishing needs the approved upload-init and publish flow for the connected account.",
     };
