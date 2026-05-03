@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       const plan = subscription.metadata.plan ?? "starter";
 
       if (userId) {
-        await supabase.from("subscriptions").upsert(
+        await supabase.from("subscriptions" as never).upsert(
           {
             user_id: userId,
             stripe_customer_id:
