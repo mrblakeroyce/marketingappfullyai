@@ -12,7 +12,6 @@ import {
   Settings2,
   Sparkles,
   Store,
-  TikTok,
   Wand2,
   Zap,
 } from "lucide-react";
@@ -27,6 +26,8 @@ export const promptExamples = [
   "Lunch special under $12",
   "Book your weekend appointment",
 ];
+
+export const examplePrompts = promptExamples;
 
 export const industryModes = [
   {
@@ -58,6 +59,33 @@ export const industryModes = [
     color: "from-emerald-500 to-teal-600",
   },
 ];
+
+export const industries = industryModes;
+
+export const brandVoiceOptions = [
+  "Friendly expert",
+  "Premium and polished",
+  "Direct and promotional",
+  "Warm neighborhood voice",
+  "Bold and energetic",
+];
+
+export const demoBusinessProfile = {
+  business_name: "River City Auto",
+  businessName: "River City Auto",
+  industry: "auto",
+  cities: ["Austin", "Round Rock"],
+  services: ["oil changes", "brake repair", "fleet maintenance"],
+  brand_colors: ["#0f172a", "#f59e0b", "#22c55e"],
+  colors: ["#0f172a", "#f59e0b", "#22c55e"],
+  brand_voice: "Friendly, clear, local, professional",
+  brandVoice: "Friendly, clear, local, professional",
+  phone: "(512) 555-0198",
+  email: "hello@rivercityauto.example",
+  website: "https://rivercityauto.example",
+};
+
+export const sampleBusinessProfile = demoBusinessProfile;
 
 export const pricingPlans = [
   {
@@ -104,6 +132,39 @@ export const pricingPlans = [
   },
 ];
 
+export const plans = [
+  { name: "Starter", price: "$49/mo", posts: "40 posts monthly" },
+  { name: "Growth", price: "$99/mo", posts: "120 posts + scheduling" },
+  { name: "Pro", price: "$149/mo", posts: "250 posts + weekly auto mode" },
+];
+
+export const platformOptions = [
+  {
+    id: "instagram",
+    name: "Instagram",
+    label: "Instagram",
+    icon: Instagram,
+    description: "Feed posts, Reels captions, profile bios.",
+    color: "from-pink-500 to-orange-400",
+  },
+  {
+    id: "facebook",
+    name: "Facebook",
+    label: "Facebook",
+    icon: Facebook,
+    description: "Page posts, local announcements, offers.",
+    color: "from-blue-500 to-indigo-600",
+  },
+  {
+    id: "tiktok",
+    name: "TikTok",
+    label: "TikTok",
+    icon: Sparkles,
+    description: "Short-form ideas, captions, upload workflow.",
+    color: "from-slate-900 to-slate-700",
+  },
+];
+
 export const navItems = [
   { href: "/dashboard", label: "Home", icon: Sparkles },
   { href: "/create", label: "Create", icon: Wand2 },
@@ -141,6 +202,41 @@ export const recentPosts = [
   },
 ];
 
+export const mockPosts = recentPosts.map((post, index) => ({
+  id: String(index + 1),
+  title: post.title,
+  status: post.status,
+  date: post.date,
+  image: ["🚗", "🛠️", "📣"][index] ?? "✨",
+}));
+
+export const scheduledPosts = [
+  {
+    id: "sched-1",
+    title: "Happy hour reminder",
+    platform: "Instagram + Facebook",
+    status: "scheduled" as const,
+    date: "Today",
+    time: "5:00 PM",
+  },
+  {
+    id: "sched-2",
+    title: "Fleet account CTA",
+    platform: "Facebook",
+    status: "draft" as const,
+    date: "Tomorrow",
+    time: "9:00 AM",
+  },
+  {
+    id: "sched-3",
+    title: "Oil change weekend special",
+    platform: "Instagram",
+    status: "posted" as const,
+    date: "Yesterday",
+    time: "11:30 AM",
+  },
+];
+
 export const connectedAccounts = [
   {
     provider: "Instagram",
@@ -173,6 +269,12 @@ export const bioSuggestions = {
   tiktok:
     "Austin auto shop sharing quick car tips, behind-the-scenes repairs, and weekly service specials.",
 };
+
+export const brandBioIdeas = [
+  { platform: "Instagram", bio: bioSuggestions.instagram },
+  { platform: "Facebook", bio: bioSuggestions.facebook },
+  { platform: "TikTok", bio: bioSuggestions.tiktok },
+];
 
 export const weeklyIdeas = [
   "Monday: maintenance tip",
