@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getMockDuePosts, markMockPostPosted } from "@/lib/scheduler/posts";
-import { getSocialProvider } from "@/lib/social";
-import type { Platform } from "@/lib/social/types";
+import { getMockDuePosts, markMockPostPosted, publishScheduledPost } from "@/lib/scheduler/posts";
 
 function authorized(request: Request) {
   const secret = process.env.SCHEDULER_SECRET;
@@ -20,17 +18,16 @@ export async function POST(request: Request) {
   const results = [];
 
   for (const post of duePosts) {
-    for (const platform of post.platforms) {
-      const provider = getSocialProvider(platform as Platform);
-      const result = await provider.post({
-        accountId: `mock-${platform}-account`,
-        caption: post.caption,
-        imageUrl: post.imageUrl,
-        hashtags: post.hashtags,
-        platform: platform as Platform,
-      });
-      results.push({ postId: post.id, platform, result });
-    }
+    const result = await publishScheduledPost({
+      id: post.id,
+      provider: "mock",
+      platforms: post.platforms,
+      caption: post.caption,
+      hashtags: post.hashtags,
+      image_url: post.imageUrl,
+      scheduled_for: post.scheduledFor,
+    });
+    results.push({ postId: post.id, result });
     markMockPostPosted(post.id);
   }
 

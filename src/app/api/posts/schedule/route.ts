@@ -5,15 +5,17 @@ import { schedulePost } from "@/lib/scheduler/posts";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const post = body.post ?? body;
     const result = await schedulePost({
       userId: body.userId ?? "demo-user",
       businessProfileId: body.businessProfileId,
-      prompt: body.prompt ?? "",
-      caption: body.caption ?? "",
-      hashtags: body.hashtags ?? [],
-      imageUrl: body.imageUrl,
-      platforms: body.platforms ?? ["instagram"],
+      prompt: post.prompt ?? "",
+      caption: post.caption ?? "",
+      hashtags: post.hashtags ?? [],
+      imageUrl: post.imageUrl,
+      platforms: post.platforms ?? ["instagram"],
       scheduledFor: body.scheduledFor,
+      industryMode: post.industryMode,
     });
 
     return NextResponse.json(result);
