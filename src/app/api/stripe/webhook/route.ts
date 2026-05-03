@@ -4,6 +4,12 @@ import { serverEnv } from "@/lib/config";
 import { getStripe } from "@/lib/billing/stripe";
 import { getServiceSupabase } from "@/lib/supabase/server";
 
+type MinimalSupabaseUpsert = {
+  from: (table: string) => {
+    upsert: (values: Record<string, unknown>, options?: Record<string, unknown>) => Promise<unknown>;
+  };
+};
+
 export async function POST(request: Request) {
   const stripe = getStripe();
   const webhookSecret = serverEnv.stripeWebhookSecret;
@@ -40,7 +46,7 @@ export async function POST(request: Request) {
       const plan = subscription.metadata.plan ?? "starter";
 
       if (userId) {
-        await (supabase.from("subscriptions" as never).upsert as never)(
+        await (supabase as unknown as MinimalSupabaseUpsert).from("subscriptions").upsert(
           {
             user_id: userId,
             stripe_customer_id:
