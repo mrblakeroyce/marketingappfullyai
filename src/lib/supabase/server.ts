@@ -41,10 +41,7 @@ export function createServiceSupabaseClient() {
     return null;
   }
 
-  return createClient<Database>(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    serverEnv.supabaseServiceRoleKey,
-  );
+  return createClient(env.NEXT_PUBLIC_SUPABASE_URL, serverEnv.supabaseServiceRoleKey);
 }
 
 export const getServiceSupabase = createServiceSupabaseClient;
