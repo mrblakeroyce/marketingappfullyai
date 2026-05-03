@@ -27,6 +27,7 @@ import { demoBusinessProfile, examplePrompts, industryModes, platformOptions } f
 type GeneratedPost = {
   caption: string;
   hashtags: string[];
+  imageUrl?: string;
   imagePrompt: string;
   suggestedTime: string;
   platformVariants: Record<string, string>;
@@ -38,6 +39,7 @@ export default function CreatePostPage() {
   const [industry, setIndustry] = useState("restaurant");
   const [platforms, setPlatforms] = useState(["instagram", "facebook"]);
   const [result, setResult] = useState<GeneratedPost | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const selectedMode = useMemo(
@@ -67,7 +69,57 @@ export default function CreatePostPage() {
       });
       const payload = (await response.json()) as { post: GeneratedPost };
       setResult(payload.post);
+      setStatus("Draft created. Edit, post now, or schedule it.");
     });
+  }
+
+  async function postNow() {
+    if (!result) return;
+    setStatus("Posting through mock social employee...");
+    const response = await fetch("/api/social/post-now", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: "mock",
+        post: {
+          caption: result.caption,
+          hashtags: result.hashtags,
+          imageUrl: result.imageUrl,
+          platforms,
+        },
+      }),
+    });
+    const payload = await response.json();
+    setStatus(
+      response.ok
+        ? `Posted in demo mode: ${payload.result?.providerPostId ?? "queued"}`
+        : payload.error ?? "Posting failed",
+    );
+  }
+
+  async function schedulePost() {
+    if (!result) return;
+    const tomorrowAtNine = new Date();
+    tomorrowAtNine.setDate(tomorrowAtNine.getDate() + 1);
+    tomorrowAtNine.setHours(9, 0, 0, 0);
+    setStatus("Scheduling for tomorrow at 9:00 AM...");
+    const response = await fetch("/api/posts/schedule", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        post: {
+          prompt,
+          caption: result.caption,
+          hashtags: result.hashtags,
+          imageUrl: result.imageUrl,
+          platforms,
+          industryMode: industry,
+        },
+        scheduledFor: tomorrowAtNine.toISOString(),
+      }),
+    });
+    const payload = await response.json();
+    setStatus(response.ok ? `Scheduled: ${payload.scheduledPost?.status}` : payload.error ?? "Schedule failed");
   }
 
   return (
@@ -213,11 +265,11 @@ export default function CreatePostPage() {
                     </div>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-3">
-                    <Button variant="secondary" className="bg-white text-ink-950 hover:bg-white/90">
+                    <Button variant="secondary" className="bg-white text-ink-950 hover:bg-white/90" onClick={postNow}>
                       <Send className="h-4 w-4" />
                       Post Now
                     </Button>
-                    <Button variant="ghost" className="border-white/15 text-white hover:bg-white/10">
+                    <Button variant="ghost" className="border-white/15 text-white hover:bg-white/10" onClick={schedulePost}>
                       <CalendarClock className="h-4 w-4" />
                       Schedule
                     </Button>
@@ -226,6 +278,11 @@ export default function CreatePostPage() {
                       Regenerate
                     </Button>
                   </div>
+                  {status ? (
+                    <div className="rounded-2xl border border-brand-200/20 bg-brand-200/10 p-3 text-sm font-bold text-brand-50">
+                      {status}
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 <div className="grid gap-3">
