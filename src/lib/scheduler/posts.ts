@@ -70,7 +70,7 @@ export function markMockPostPosted(postId: string) {
 }
 
 export async function publishScheduledPost(post: ScheduledPostRecord) {
-  const platform = post.provider ?? post.platforms?.[0] ?? "mock";
+  const platform = (post.provider ?? post.platforms?.[0] ?? "mock") as SocialProviderName;
   const provider = getSocialProvider(platform);
   const input: PublishPayload = {
     postId: post.id,

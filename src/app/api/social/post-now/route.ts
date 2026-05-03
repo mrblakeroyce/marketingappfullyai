@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 
 import { demoBusinessProfile } from "@/lib/data";
 import { getSocialProvider } from "@/lib/social";
-import type { SocialAccount } from "@/lib/social/types";
+import type { SocialAccount, SocialProviderName } from "@/lib/social/types";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
-  const providerName = String(body.provider ?? "mock");
+  const providerName = String(body.provider ?? "mock") as SocialProviderName;
   const provider = getSocialProvider(providerName);
   const post = body.post ?? body;
   const account: SocialAccount = {

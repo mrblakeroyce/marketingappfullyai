@@ -10,13 +10,13 @@ export async function POST(request: Request) {
 
   const bios = await generatePlatformBios({
     prompt: "Optimize social media bios",
-    business: {
-      name: String(business),
+    businessProfile: {
+      business_name: String(business),
       industry: String(industry),
       cities: [String(city)],
       services: ["local service", "customer care"],
-      colors: ["#111827", "#34d399"],
-      brandVoice: "Friendly, direct, professional",
+      brand_colors: ["#111827", "#34d399"],
+      brand_voice: "Friendly, direct, professional",
     },
     platforms: ["instagram", "facebook", "tiktok"],
   });

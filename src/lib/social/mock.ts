@@ -2,7 +2,7 @@ import type { PublishPayload, PublishResult, SocialAccount, SocialProvider } fro
 
 export class MockSocialProvider implements SocialProvider {
   provider = "mock" as const;
-  name = "mock";
+  name = "mock" as const;
 
   getAuthorizationUrl() {
     return "/accounts?mockConnected=true";
@@ -16,7 +16,7 @@ export class MockSocialProvider implements SocialProvider {
       displayName: "Demo Local Business",
       accessToken: "mock-access-token",
       refreshToken: "mock-refresh-token",
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
       scopes: ["publish", "profile"],
     };
   }

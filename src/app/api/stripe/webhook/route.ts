@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { serverEnv } from "@/lib/config";
 import { getStripe } from "@/lib/billing/stripe";
-import { getServiceSupabase } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   const stripe = getStripe();
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
   try {
     const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-    const supabase = getServiceSupabase();
+    const supabase = createServiceSupabaseClient();
 
     if (!supabase) {
       return NextResponse.json({ received: true, persisted: false });

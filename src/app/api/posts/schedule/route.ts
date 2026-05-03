@@ -15,7 +15,6 @@ export async function POST(request: Request) {
       imageUrl: post.imageUrl,
       platforms: post.platforms ?? ["instagram"],
       scheduledFor: body.scheduledFor,
-      industryMode: post.industryMode,
     });
 
     return NextResponse.json(result);

@@ -277,7 +277,7 @@ export const connectedAccounts = [
     provider: "TikTok",
     handle: "Connect when approved",
     status: "Mock",
-    icon: TikTok,
+    icon: Sparkles,
     accent: "bg-zinc-950",
   },
 ];

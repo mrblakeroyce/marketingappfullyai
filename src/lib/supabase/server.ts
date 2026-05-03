@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
+import { createClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 
-import { env } from "@/lib/config";
+import { env, serverEnv } from "@/lib/config";
 import type { Database } from "@/types/database";
 
 type CookieToSet = {
@@ -32,6 +33,17 @@ export async function createSupabaseServerClient() {
         },
       },
     },
+  );
+}
+
+export function getServiceSupabase() {
+  if (!env.NEXT_PUBLIC_SUPABASE_URL || !serverEnv.supabaseServiceRoleKey) {
+    return null;
+  }
+
+  return createClient<Database>(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    serverEnv.supabaseServiceRoleKey,
   );
 }
 

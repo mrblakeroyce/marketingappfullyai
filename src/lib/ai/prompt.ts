@@ -6,11 +6,14 @@ export type GeneratePostInput = {
   platforms?: string[];
   businessProfile?: {
     business_name?: string | null;
+    businessName?: string | null;
     industry?: string | null;
     cities?: string[] | null;
     services?: string[] | null;
     brand_colors?: string[] | null;
+    brandColors?: string[] | null;
     brand_voice?: string | null;
+    brandVoice?: string | null;
     phone?: string | null;
     website?: string | null;
   } | null;

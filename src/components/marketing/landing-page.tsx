@@ -204,7 +204,7 @@ export function LandingPage() {
         </div>
         <div className="grid gap-4 lg:grid-cols-3">
           {pricingPlans.map((plan) => (
-            <Card key={plan.name} className={plan.highlighted ? "rounded-[2rem] border-ink bg-ink text-cream" : "rounded-[2rem]"}>
+            <Card key={plan.name} className={plan.featured ? "rounded-[2rem] border-ink bg-ink text-cream" : "rounded-[2rem]"}>
               <CardHeader>
                 <CardTitle>{plan.name}</CardTitle>
                 <div className="font-display text-4xl font-black">
@@ -222,7 +222,7 @@ export function LandingPage() {
                     </div>
                   ))}
                 </div>
-                <Button asChild className="mt-6 w-full rounded-2xl" variant={plan.highlighted ? "secondary" : "primary"}>
+                <Button asChild className="mt-6 w-full rounded-2xl" variant={plan.featured ? "secondary" : "primary"}>
                   <Link href="/billing">Choose {plan.name}</Link>
                 </Button>
               </CardContent>
