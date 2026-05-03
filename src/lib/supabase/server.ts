@@ -4,6 +4,12 @@ import { createServerClient } from "@supabase/ssr";
 import { env } from "@/lib/config";
 import type { Database } from "@/types/database";
 
+type CookieToSet = {
+  name: string;
+  value: string;
+  options?: Parameters<ReturnType<typeof cookies>["set"]>[2];
+};
+
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
@@ -15,7 +21,7 @@ export async function createSupabaseServerClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: CookieToSet[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options),

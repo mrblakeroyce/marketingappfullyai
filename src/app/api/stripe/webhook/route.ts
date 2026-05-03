@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { getEnv } from "@/lib/config";
+import { serverEnv } from "@/lib/config";
 import { getStripe } from "@/lib/billing/stripe";
 import { getServiceSupabase } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   const stripe = getStripe();
-  const webhookSecret = getEnv("STRIPE_WEBHOOK_SECRET");
+  const webhookSecret = serverEnv.stripeWebhookSecret;
 
   if (!stripe || !webhookSecret) {
     return NextResponse.json(
@@ -36,8 +36,8 @@ export async function POST(request: Request) {
       event.type === "customer.subscription.deleted"
     ) {
       const subscription = event.data.object;
-      const userId = subscription.metadata?.user_id;
-      const plan = subscription.metadata?.plan ?? "starter";
+      const userId = subscription.metadata.user_id;
+      const plan = subscription.metadata.plan ?? "starter";
 
       if (userId) {
         await supabase.from("subscriptions").upsert(
@@ -50,9 +50,7 @@ export async function POST(request: Request) {
             stripe_subscription_id: subscription.id,
             plan,
             status: subscription.status,
-            current_period_end: subscription.current_period_end
-              ? new Date(subscription.current_period_end * 1000).toISOString()
-              : null,
+            current_period_end: null,
           },
           { onConflict: "stripe_subscription_id" },
         );
