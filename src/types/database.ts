@@ -65,6 +65,54 @@ export interface PostVariant {
   created_at: string;
 }
 
+export interface Subscription {
+  id: string;
+  user_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  plan: PlanName;
+  status: string;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UsageEvent {
+  id: string;
+  user_id: string;
+  event_type: string;
+  quantity: number;
+  metadata: Json;
+  created_at: string;
+}
+
+export interface SocialAccount {
+  id: string;
+  user_id: string;
+  provider: SocialProvider;
+  provider_account_id: string | null;
+  display_name: string;
+  avatar_url: string | null;
+  access_token_encrypted: string | null;
+  refresh_token_encrypted: string | null;
+  expires_at: string | null;
+  scopes: string[];
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ScheduledJob {
+  id: string;
+  post_id: string;
+  run_at: string;
+  status: string;
+  attempts: number;
+  last_error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -75,6 +123,7 @@ export type Database = {
           business_name: string;
         };
         Update: Partial<BusinessProfile>;
+        Relationships: [];
       };
       generated_posts: {
         Row: GeneratedPost;
@@ -84,6 +133,7 @@ export type Database = {
           caption: string;
         };
         Update: Partial<GeneratedPost>;
+        Relationships: [];
       };
       post_variants: {
         Row: PostVariant;
@@ -93,19 +143,10 @@ export type Database = {
           caption: string;
         };
         Update: Partial<PostVariant>;
+        Relationships: [];
       };
       subscriptions: {
-        Row: {
-          id: string;
-          user_id: string;
-          stripe_customer_id: string | null;
-          stripe_subscription_id: string | null;
-          plan: PlanName;
-          status: string;
-          current_period_end: string | null;
-          created_at: string;
-          updated_at: string;
-        };
+        Row: Subscription;
         Insert: {
           user_id: string;
           stripe_customer_id?: string | null;
@@ -114,7 +155,41 @@ export type Database = {
           status?: string;
           current_period_end?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["subscriptions"]["Row"]>;
+        Update: Partial<Subscription>;
+        Relationships: [];
+      };
+      usage_events: {
+        Row: UsageEvent;
+        Insert: {
+          user_id: string;
+          event_type: string;
+          quantity?: number;
+          metadata?: Json;
+        };
+        Update: Partial<UsageEvent>;
+        Relationships: [];
+      };
+      social_accounts: {
+        Row: SocialAccount;
+        Insert: Partial<SocialAccount> & {
+          user_id: string;
+          provider: SocialProvider;
+          display_name: string;
+        };
+        Update: Partial<SocialAccount>;
+        Relationships: [];
+      };
+      scheduled_jobs: {
+        Row: ScheduledJob;
+        Insert: {
+          post_id: string;
+          run_at: string;
+          status?: string;
+          attempts?: number;
+          last_error?: string | null;
+        };
+        Update: Partial<ScheduledJob>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
