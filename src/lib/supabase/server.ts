@@ -7,7 +7,7 @@ import type { Database } from "@/types/database";
 type CookieToSet = {
   name: string;
   value: string;
-  options?: Parameters<ReturnType<typeof cookies>["set"]>[2];
+  options?: Parameters<Awaited<ReturnType<typeof cookies>>["set"]>[2];
 };
 
 export async function createSupabaseServerClient() {
