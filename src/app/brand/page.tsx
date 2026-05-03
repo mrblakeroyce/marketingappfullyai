@@ -3,7 +3,6 @@ import {
   Check,
   ImageIcon,
   Palette,
-  Sparkles,
   UploadCloud,
   Wand2,
 } from "lucide-react";
