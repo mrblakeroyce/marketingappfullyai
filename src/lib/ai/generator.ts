@@ -125,24 +125,25 @@ export async function generateMarketingPost(
   return safeJsonParse(content) ?? createFallbackGeneration(input);
 }
 
-export async function generatePlatformBios(input: AiGenerationInput) {
-  const base = createFallbackGeneration(input);
+export async function generatePlatformBios(input: GeneratePostInput) {
+  const business = normalizeBusiness(input);
+  const fallback = {
+    instagram: `${business.name} • Local ${business.industry} in ${
+      business.cities[0] ?? "your city"
+    } ✨ ${business.services.slice(0, 2).join(" • ")}. DM to book.`,
+    facebook: `${business.name} helps local customers with ${business.services.join(
+      ", ",
+    )}. Call ${business.phone ?? "today"} or message us for fast, friendly service.`,
+    tiktok: `${business.name} | Local ${business.industry} tips, deals, and behind-the-scenes.`,
+  };
 
-  if (!appConfig.openai.apiKey) {
-    return {
-      instagram: `${input.business.name} • ${input.business.industry} in ${
-        input.business.cities[0] ?? "your city"
-      } ✨ ${input.business.services.slice(0, 2).join(" • ")}. DM to book.`,
-      facebook: `${input.business.name} helps local customers with ${input.business.services.join(
-        ", ",
-      )}. Call ${input.business.phone ?? "today"} or message us for fast, friendly service.`,
-      tiktok: `${input.business.name} | Local ${input.business.industry} tips, deals, and behind-the-scenes.`,
-    };
+  if (!serverEnv.openaiApiKey) {
+    return fallback;
   }
 
-  const openai = new OpenAI({ apiKey: appConfig.openai.apiKey });
+  const openai = new OpenAI({ apiKey: serverEnv.openaiApiKey });
   const completion = await openai.chat.completions.create({
-    model: appConfig.openai.textModel,
+    model: process.env.OPENAI_TEXT_MODEL ?? "gpt-4o-mini",
     response_format: { type: "json_object" },
     messages: [
       {
@@ -151,12 +152,15 @@ export async function generatePlatformBios(input: AiGenerationInput) {
       },
       {
         role: "user",
-        content: `Create optimized social bios for this local business. Business: ${JSON.stringify(
-          input.business,
-        )}. Current campaign context: ${base.caption}`,
+        content: `Create optimized social bios for this local business: ${JSON.stringify(
+          business,
+        )}`,
       },
     ],
   });
 
-  return JSON.parse(completion.choices[0]?.message.content ?? "{}") as Record<string, string>;
+  return {
+    ...fallback,
+    ...(JSON.parse(completion.choices[0]?.message.content ?? "{}") as Record<string, string>),
+  };
 }
