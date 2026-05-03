@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { env } from "@/lib/config";
+import { appConfig, serverEnv } from "@/lib/config";
 import { createBillingPortalUrl } from "@/lib/billing/stripe";
 
 export async function POST(request: Request) {
@@ -11,10 +11,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "customerId is required" }, { status: 400 });
     }
 
-    if (!env.STRIPE_SECRET_KEY) {
+    if (!serverEnv.stripeSecretKey) {
       return NextResponse.json({
         mode: "demo",
-        url: `${env.NEXT_PUBLIC_APP_URL}/billing?demo=portal`,
+        url: `${appConfig.url}/billing?demo=portal`,
         message: "Stripe is not configured yet. Add STRIPE_SECRET_KEY to enable the customer portal.",
       });
     }

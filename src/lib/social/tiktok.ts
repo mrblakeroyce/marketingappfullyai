@@ -1,4 +1,4 @@
-import { env } from "@/lib/config";
+import { appConfig, serverEnv } from "@/lib/config";
 import type {
   PublishResult,
   SocialConnection,
@@ -11,15 +11,15 @@ export class TikTokProvider implements SocialProvider {
   displayName = "TikTok";
 
   getConnectUrl(state: string): string {
-    if (!env.tiktok.clientId || !env.appUrl) {
+    if (!serverEnv.tiktokClientId || !appConfig.url) {
       return `/accounts?mock=1&provider=tiktok&state=${encodeURIComponent(state)}`;
     }
 
     const params = new URLSearchParams({
-      client_key: env.tiktok.clientId,
+      client_key: serverEnv.tiktokClientId,
       response_type: "code",
       scope: "user.info.basic,video.publish,video.upload",
-      redirect_uri: `${env.appUrl}/api/social/callback/tiktok`,
+      redirect_uri: `${appConfig.url}/api/social/callback/tiktok`,
       state,
     });
 
@@ -27,7 +27,7 @@ export class TikTokProvider implements SocialProvider {
   }
 
   async exchangeCode(code: string): Promise<SocialConnection> {
-    if (!env.tiktok.clientId || !env.tiktok.clientSecret || !env.appUrl) {
+    if (!serverEnv.tiktokClientId || !serverEnv.tiktokClientSecret || !appConfig.url) {
       return {
         provider: this.id,
         providerAccountId: `mock-tiktok-${Date.now()}`,
@@ -39,11 +39,11 @@ export class TikTokProvider implements SocialProvider {
     }
 
     const body = new URLSearchParams({
-      client_key: env.tiktok.clientId,
-      client_secret: env.tiktok.clientSecret,
+      client_key: serverEnv.tiktokClientId,
+      client_secret: serverEnv.tiktokClientSecret,
       code,
       grant_type: "authorization_code",
-      redirect_uri: `${env.appUrl}/api/social/callback/tiktok`,
+      redirect_uri: `${appConfig.url}/api/social/callback/tiktok`,
     });
 
     const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
@@ -77,7 +77,7 @@ export class TikTokProvider implements SocialProvider {
   }
 
   async publishPost(payload: SocialPostPayload): Promise<PublishResult> {
-    if (!env.tiktok.clientId) {
+    if (!serverEnv.tiktokClientId) {
       return {
         provider: this.id,
         status: "mocked",
