@@ -32,7 +32,6 @@ const base =
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
   size?: Size;
-  asChild?: boolean;
 };
 
 export function Button({
@@ -40,19 +39,8 @@ export function Button({
   variant = "primary",
   size = "md",
   type = "button",
-  asChild,
   ...props
 }: ButtonProps) {
-  if (asChild && props.children) {
-    const child = Children.only(props.children);
-    if (isValidElement(child)) {
-      const childElement = child as ReactElement<{ className?: string }>;
-      return cloneElement(childElement, {
-        className: cn(base, variants[variant], sizes[size], className, childElement.props.className),
-      });
-    }
-  }
-
   return <button className={cn(base, variants[variant], sizes[size], className)} type={type} {...props} />;
 }
 
